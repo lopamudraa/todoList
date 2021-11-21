@@ -8,6 +8,8 @@ import {createStore, combineReducers} from 'redux';
 import {Provider} from 'react-redux';
 import reducer from './reducer';
 import Counter from './Counter';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 const store = createStore(reducer);
 
 ReactDOM.render(

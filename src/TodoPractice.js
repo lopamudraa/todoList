@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Container, ListGroup, Button, InputGroup, FormControl, Col, Stack, Collapse, Row } from 'react-bootstrap';
 
 
 class TodoPractice extends Component {
@@ -11,7 +12,8 @@ class TodoPractice extends Component {
         curInputV: "",
         results: [],
         count: 0,
-        editable: {}
+        editable: {},
+        errText: false
     }
 
     onChangeHandler = (event) => {
@@ -25,15 +27,20 @@ class TodoPractice extends Component {
         // var cnt = this.state.count;
         // arr.push({inputVal: this.itext, id: new Date().toLocaleTimeString(), counts: cnt + 1});
         // this.setState({results: arr, count: cnt+1});
+        if (this.itext === "") {
+            this.setState( { errText: true } );
+            return;
+        }
+
         this.setState((prevState) => ({
             results: [
                 ...prevState.results,
-                { inputVal: this.itext, id: new Date().toLocaleTimeString() },
+                { inputVal: this.itext, id: new Date().toLocaleTimeString(), done: false },
             ],
             count: prevState.count + 1,
-            curInputV: ""
-        }))
-        console.log((".........", this.state));
+            curInputV: "",
+            errText: false
+        }), () => this.itext = "");
     }
 
     onDeleteHandler = (id) => {
@@ -62,36 +69,72 @@ class TodoPractice extends Component {
         this.listEdit = e.target.value;
     }
 
+    onListItemStatusToggle(e, id) {
+        this.setState((prevState) => {
+            var res = [...prevState.results];
+            var ind = res.findIndex((obj => obj.id === id));
+            res[ind].done = e.target.checked;
+            return {
+                results: res
+            }
+        });
+    }
+
+    getListItem(res) {
+        if (res.id === this.state.editable.id) {
+            return (
+                <React.Fragment>
+                    <FormControl defaultValue={res.inputVal} onChange={this.onListItemChange}></FormControl>
+                    <Button variant="outline-secondary" onClick={() => (this.onSaveHandler(res.id, this.listEdit))}>
+                        Save
+                    </Button>
+                </React.Fragment>
+            );
+        } else {
+            return (
+                <React.Fragment>
+                    <div>{res.inputVal}</div>
+                    <Button className="ms-auto" variant="outline-secondary" onClick={() => this.onEditHandler(res.id, res.inputVal)}>
+                        Edit
+                    </Button>
+                </React.Fragment>
+            );
+        }
+    }
+
     render() {
 
         return (
-            <div>
-                <input type="text" onChange={this.onChangeHandler} value={this.state.curInputV} />
-                <button onClick={this.onClickHandler}>Store Result</button>
+            <Container fluid style={{ marginTop: "10px" }}>
+                <Row>
+                    <Col md={5}>
+                        <InputGroup className="mb-3">
+                            <FormControl value={this.state.curInputV} onChange={this.onChangeHandler}></FormControl>
+                            <Button variant="info" onClick={this.onClickHandler}>Store Result</Button>
+                        </InputGroup>
+                        <hr />
+                        <ListGroup>
+                            {
+                                this.state.results.map((res, index) => (
+                                    <ListGroup.Item key={res.id} variant={ res.done ? "success" : null }>
+                                        <Stack direction="horizontal" gap={3}>
+                                            <input type="checkbox" onChange={(e) => this.onListItemStatusToggle(e, res.id)} />
+                                            {this.getListItem(res)}
+                                            <Button variant="outline-danger" onClick={() => this.onDeleteHandler(res.id)}>
+                                                Delete
+                                            </Button>
+                                        </Stack>
+                                    </ListGroup.Item>
 
-                <hr />
-                <ul style={{ listStyleType:"none" }}>
-                    {
-                        this.state.results.map((res, index) => (
-                            <li key={res.id}>
-                                {res.id === this.state.editable.id ?
-                                    <div>
-                                        <input type="text" defaultValue={res.inputVal} onChange={this.onListItemChange} />
-                                        <button onClick={() => (this.onSaveHandler(res.id, this.listEdit))}> Save </button>
-                                        <button onClick={() => this.onDeleteHandler(res.id)}> Delete </button>
-                                    </div> :
-                                    <div>
-                                        {res.inputVal}
-                                        <button onClick={(() => this.onEditHandler(res.id, res.inputVal))}> Edit </button>
-                                        <button onClick={() => this.onDeleteHandler(res.id)}> Delete </button>
-                                    </div>
-                                }
-                            </li>
-
-                        ))
-                    }
-                </ul>
-            </div>
+                                ))
+                            }
+                        </ListGroup>
+                    </Col>
+                    <Col md={4}>
+                        <Collapse in={this.state.errText}><div>Please enter some text!</div></Collapse>
+                    </Col>
+                </Row>
+            </Container>
         )
     }
 }
