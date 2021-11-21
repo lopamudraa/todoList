@@ -3,11 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import TodoPractice from './TodoPractice';
+import {createStore, combineReducers} from 'redux';
+import {Provider} from 'react-redux';
+import reducer from './reducer';
+import Counter from './Counter';
+const store = createStore(reducer);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider store={store}>
+    <TodoPractice /></Provider>,
   document.getElementById('root')
 );
 
@@ -15,3 +20,6 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+
+

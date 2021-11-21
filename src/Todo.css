@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+  }
+
+  input[type=text] {
+    width: 40%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+  }
+
+  .f-plus {
+
+  }
+
+  .container {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    height:900px;
+    width:900px;
+    margin: auto;
+    padding-top: 40px;
+  }
+
+.bc{
+    background-color: lightseagreen;
+     height: 30px;
+    /* width: 30% */
+    width: 40%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.completed{
+  text-decoration: line-through;
+}
