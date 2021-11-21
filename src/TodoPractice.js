@@ -5,19 +5,20 @@ class TodoPractice extends Component {
     constructor() {
         super();
         this.itext = "";
-        this.acb = 5;
+        this.listEdit = "";
     }
     state = {
         curInputV: "",
         results: [],
         count: 0,
-        editable: false
+        editable: {}
     }
 
     onChangeHandler = (event) => {
         this.itext = event.target.value;
         this.setState({ curInputV: this.itext });
     }
+
     onClickHandler = () => {
 
         // var arr =[...this.state.results];
@@ -29,7 +30,8 @@ class TodoPractice extends Component {
                 ...prevState.results,
                 { inputVal: this.itext, id: new Date().toLocaleTimeString() },
             ],
-            count: prevState.count + 1
+            count: prevState.count + 1,
+            curInputV: ""
         }))
         console.log((".........", this.state));
     }
@@ -39,16 +41,25 @@ class TodoPractice extends Component {
         this.setState({ results: updatedArray });
     }
 
-    onEditHandler = () => {
-        this.setState({ editable: true });
+    onEditHandler = (id, val) => {
+        this.listEdit = val;
+        this.setState({ editable: { id: id } });
     }
 
-    onSaveHandler = () => {
-        this.setState({ editable: false });
+    onSaveHandler = (id, val) => {
+        this.setState((prevState) => {
+            var res = [...prevState.results];
+            var ind = res.findIndex((obj => obj.id === id));
+            res[ind].inputVal = val;
+            return {
+                results: res,
+                editable: {}
+            }
+        });
     }
 
-    editHandler = () => {
-
+    onListItemChange = (e) => {
+        this.listEdit = e.target.value;
     }
 
     render() {
@@ -59,12 +70,22 @@ class TodoPractice extends Component {
                 <button onClick={this.onClickHandler}>Store Result</button>
 
                 <hr />
-                <ul>
+                <ul style={{ listStyleType:"none" }}>
                     {
                         this.state.results.map((res, index) => (
-                            <li key = {res.id}>
-                                {!this.state.editable ? <span>{res.inputVal} <button onClick={this.onEditHandler}> Edit </button><button onClick={() => this.onDeleteHandler(res.id)}> Delete </button></span> : null}
-                                {this.state.editable ? <span><input type="text" value={res.inputVal} onChange={this.editHandler} /> <button onClick={this.onSaveHandler}> Save </button><button onClick={() => this.onDeleteHandler(res.id)}> Delete </button></span> : null}
+                            <li key={res.id}>
+                                {res.id === this.state.editable.id ?
+                                    <div>
+                                        <input type="text" defaultValue={res.inputVal} onChange={this.onListItemChange} />
+                                        <button onClick={() => (this.onSaveHandler(res.id, this.listEdit))}> Save </button>
+                                        <button onClick={() => this.onDeleteHandler(res.id)}> Delete </button>
+                                    </div> :
+                                    <div>
+                                        {res.inputVal}
+                                        <button onClick={(() => this.onEditHandler(res.id, res.inputVal))}> Edit </button>
+                                        <button onClick={() => this.onDeleteHandler(res.id)}> Delete </button>
+                                    </div>
+                                }
                             </li>
 
                         ))
